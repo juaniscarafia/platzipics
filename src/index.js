@@ -23,8 +23,12 @@ app.on('ready',() => {
         maximizable: false,
         resizable: false,
         show: false,
-        nodeIntegration: false,
+        webPreferences: {
+            nodeIntegration: true
+        }
     });
+
+    win.setMenu(null);
 
     //
     win.once('ready-to-show', () => {
