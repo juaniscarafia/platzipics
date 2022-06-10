@@ -1,9 +1,14 @@
 import url from 'url';
 import path from 'path';
+import applyFilter from './filters';
+import { setIpc, sendIpc} from './ipcRendererEvent';
 
 window.addEventListener('load', () => {
+    setIpc();
     addImageEvents();
     searchImagesEvent();
+    selectEvent();
+    openDirectory();
 });
 
 function addImageEvents() {
@@ -16,10 +21,24 @@ function addImageEvents() {
     });
 }
 
+function selectEvent(){
+    const select = document.getElementById('filters');
+    const image = document.getElementById('image-displayed');
+
+    select.addEventListener('change', function(){
+        applyFilter(this.value,image);
+    });
+}
+
 function changeImage(node){
-    document.querySelector('li.selected').classList.remove('selected');
-    node.classList.add('selected');
-    document.getElementById('image-displayed').src = node.querySelector('img').src;
+    if (node) {
+        document.querySelector('li.selected').classList.remove('selected');
+        node.classList.add('selected');
+        document.getElementById('image-displayed').src = node.querySelector('img').src;
+    }
+    else{
+        document.getElementById('image-displayed').src = '';
+    }
 }
 
 function searchImagesEvent(){
@@ -57,5 +76,12 @@ function showAllImages(){
     const thumbs = document.querySelectorAll('li.list-group-item img');
     thumbs.forEach(imagen => {
         imagen.parentNode.classList.remove('hidden');
+    });
+}
+
+function openDirectory(){
+    const openDirectory = document.getElementById('open-directory');
+    openDirectory.addEventListener('click', function(){
+        sendIpc();
     });
 }
