@@ -23,6 +23,7 @@ app.on('ready',() => {
         maximizable: false,
         resizable: false,
         show: false,
+        nodeIntegration: false,
     });
 
     //
