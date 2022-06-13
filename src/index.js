@@ -3,6 +3,9 @@ import path from 'path';
 // Instanciando los objetos app y BrowserWindow
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import devtools from './devtools';
+import isImage from 'is-image';
+import filesize from 'filesize';
+import fs from 'fs';
 
 let win;
 
@@ -60,9 +63,26 @@ ipcMain.on('open-directory', (event) => {
         title: 'Seleccione la nueva ubicación',
         buttonLabel: 'Abrir ubicación',
         properties: ['openDirectory']
-    }).then(result => {
-        console.log(result.canceled);
-        console.log(result.filePaths);
+    }).then(resul => {
+        const images = [];
+        if (!resul.canceled) {
+            const dir = resul.filePaths[0];
+            fs.readdir(dir,(err, files) =>{
+                files.forEach(file => {
+                    if (isImage(file)) {
+                        let imageFile = path.join(dir,file);
+                        let stats = fs.statSync(imageFile);
+                        let size = filesize(stats.size, { round: 0 });
+                        images.push({
+                            filename: file,
+                            src: `file://${imageFile}`,
+                            size
+                        });
+                    }
+                });
+                console.log(images);
+            });
+        }
     }).catch(err => {
         console.log(err);
     });
