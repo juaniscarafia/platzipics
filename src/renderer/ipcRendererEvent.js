@@ -1,8 +1,12 @@
 import { ipcRenderer } from 'electron';
+import { addImageEvents, changeImage, selectFirstImage, clearImages, loadImages } from './images-ui';
 
 function setIpc(){
-    ipcRenderer.on('pong',(event, arg) =>{
-        console.log(`pong recibido - ${arg}`);
+    ipcRenderer.on('load-images',(event, images) =>{
+        clearImages();
+        loadImages(images);
+        addImageEvents();
+        selectFirstImage();
     });
 }
 
