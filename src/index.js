@@ -63,10 +63,10 @@ ipcMain.on('open-directory', (event) => {
         title: 'Seleccione la nueva ubicación',
         buttonLabel: 'Abrir ubicación',
         properties: ['openDirectory']
-    }).then(resul => {
+    }).then(result => {
         const images = [];
-        if (!resul.canceled) {
-            const dir = resul.filePaths[0];
+        if (!result.canceled) {
+            const dir = result.filePaths[0];
             fs.readdir(dir,(err, files) =>{
                 if (err) throw err;
                 files.forEach(file => {
@@ -83,6 +83,23 @@ ipcMain.on('open-directory', (event) => {
                 });
                 event.sender.send('load-images', images);
             });
+        }
+    }).catch(err => {
+        console.log(err);
+    });
+});
+
+ipcMain.on('open-save-dialog', (event, ext) =>{
+    dialog.showSaveDialog(win, {
+        title: 'Guardar imagen modificada',
+        buttonLabel: 'Guardar imagen',
+        filters: [
+            { name: 'Images', extensions: [ext.substr(1)] },
+        ]
+    }).then(result => {
+        if (!result.canceled && result.filePath) {
+            const dir = result.filePath;
+            event.sender.send('save-image', dir);
         }
     }).catch(err => {
         console.log(err);
