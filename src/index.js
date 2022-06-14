@@ -105,3 +105,11 @@ ipcMain.on('open-save-dialog', (event, ext) =>{
         console.log(err);
     });
 });
+
+ipcMain.on('show-dialog', (evt, info) => {
+    dialog.showMessageBox(win, {
+        type: info.type,
+        title: info.title,
+        message: info.message
+    });
+});
