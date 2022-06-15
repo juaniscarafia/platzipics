@@ -1,15 +1,21 @@
 import { ipcRenderer, remote } from 'electron';
+import settings from 'electron-app-settings';
 import { addImageEvents, selectFirstImage, clearImages, loadImages } from './images-ui';
 import { saveImage } from './filters';
 import path from 'path';
 import os from 'os';
 
 function setIpc(){
-    ipcRenderer.on('load-images',(event, images) =>{
+    if (settings.has('directory')) {
+        ipcRenderer.send('load-directory',settings.get('directory'));
+    }
+
+    ipcRenderer.on('load-images',(event, dir, images) =>{
         clearImages();
         loadImages(images);
         addImageEvents();
         selectFirstImage();
+        settings.set('directory', dir);
     });
 
     ipcRenderer.on('save-image', (event, file) =>{

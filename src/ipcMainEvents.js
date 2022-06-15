@@ -11,29 +11,17 @@ function setMainIpc(win){
             buttonLabel: 'Abrir ubicación',
             properties: ['openDirectory']
         }).then(result => {
-            const images = [];
             if (!result.canceled) {
                 const dir = result.filePaths[0];
-                fs.readdir(dir,(err, files) =>{
-                    if (err) throw err;
-                    files.forEach(file => {
-                        if (isImage(file)) {
-                            let imageFile = path.join(dir,file);
-                            let stats = fs.statSync(imageFile);
-                            let size = filesize(stats.size, { round: 0 });
-                            images.push({
-                                filename: file,
-                                src: `file://${imageFile}`,
-                                size
-                            });
-                        }
-                    });
-                    event.sender.send('load-images', images);
-                });
+                loadImages(event, dir);
             }
         }).catch(err => {
             console.log(err);
         });
+    });
+
+    ipcMain.on('load-directory', (event, dir) =>{
+        loadImages(event, dir);
     });
     
     ipcMain.on('open-save-dialog', (event, ext) =>{
@@ -60,6 +48,27 @@ function setMainIpc(win){
             title: info.title,
             message: info.message
         });
+    });
+}
+
+function loadImages(event, dir){
+    const images = [];
+    
+    fs.readdir(dir,(err, files) =>{
+        if (err) throw err;
+        files.forEach(file => {
+            if (isImage(file)) {
+                let imageFile = path.join(dir,file);
+                let stats = fs.statSync(imageFile);
+                let size = filesize(stats.size, { round: 0 });
+                images.push({
+                    filename: file,
+                    src: `file://${imageFile}`,
+                    size
+                });
+            }
+        });
+        event.sender.send('load-images', dir, images);
     });
 }
 
