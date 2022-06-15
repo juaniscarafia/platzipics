@@ -5,7 +5,7 @@ import devtools from './devtools';
 import handleErrors from './handle-errors';
 import setMainIpc from './ipcMainEvents';
 
-let win;
+global.win; // eslint-disable-line
 
 if(process.env.NODE_ENV === 'development') {
     devtools();
@@ -19,7 +19,7 @@ app.on('before-quit', () => {
 // Ejecutando ordenes cuando la aplicación está lista
 app.on('ready',() => {
     // Creando ventana
-    win = new BrowserWindow({
+    global.win = new BrowserWindow({
         width: 800,
         height: 600,
         title: 'Hola mundo!',
@@ -28,33 +28,33 @@ app.on('ready',() => {
         resizable: false,
         show: false,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
         },
         icon: 'src/assets/Circle-icons-image.ico'    
     });
 
-    setMainIpc(win);
-    handleErrors(win);
+    setMainIpc(global.win);
+    handleErrors(global.win);
 
-    win.setMenu(null);
+    global.win.setMenu(null);
 
     //
-    win.once('ready-to-show', () => {
-        win.show();
+    global.win.once('ready-to-show', () => {
+        global.win.show();
     });
 
     // Detectando cuando la ventana se mueve
-    win.on('move', () => {
-        const position = win.getPosition();
+    global.win.on('move', () => {
+        const position = global.win.getPosition();
         //console.log(`La posición es ${position}`);
     })
 
     // Detectando el cierre de la ventana que cierra el aplicativo
-    win.on('close', () => {
-        win = null;
+    global.win.on('close', () => {
+        global.win = null;
         app.quit();
     });
 
     // Carga url en ventana
-    win.loadURL(`file://${__dirname}/renderer/index.html`);
+    global.win.loadURL(`file://${__dirname}/renderer/index.html`);
 });
