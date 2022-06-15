@@ -1,11 +1,12 @@
 import { setIpc, openDirectory, saveFile } from './ipcRendererEvent';
-import { addImageEvents, changeImage, selectFirstImage, selectEvent, searchImagesEvent } from './images-ui';
+import { addImageEvents, selectFirstImage, selectEvent, searchImagesEvent } from './images-ui';
 
 window.addEventListener('load', () => {
     setIpc();
     addImageEvents();
     searchImagesEvent();
     selectEvent();
+    selectFirstImage();
     buttonEvent('open-directory', openDirectory);
     buttonEvent('save-button', saveFile);
 });
